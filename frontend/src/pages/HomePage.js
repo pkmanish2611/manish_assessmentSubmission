@@ -12,11 +12,14 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
 
+  // Use environment variable for backend URL
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+
   // Fetch Rooms
   const fetchRooms = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/bookings/rooms");
+      const res = await fetch(`${API_BASE_URL}/api/bookings/rooms`);
       const data = await res.json();
       if (Array.isArray(data)) {
         setRooms(data);
@@ -42,26 +45,24 @@ const HomePage = () => {
   const bookRooms = async (count) => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/bookings/book", {
+      const res = await fetch(`${API_BASE_URL}/api/bookings/book`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ count }),
       });
       const data = await res.json();
-  
+
       if (data.bookedRooms) {
         setBookedRooms(data.bookedRooms);
-  
-        // ✅ Ensure rooms are updated correctly
         setRooms((prevRooms) =>
           prevRooms.map((room) =>
-            data.bookedRooms.includes(room.number) // Ensure we're using the correct property
-              ? { ...room, booked: true }  // ✅ Mark as booked
+            data.bookedRooms.includes(room.number)
+              ? { ...room, booked: true }
               : room
           )
         );
       }
-  
+
       setTravelTime(data.travelTime || 0);
       setShowNotification(true);
     } catch (err) {
@@ -75,9 +76,7 @@ const HomePage = () => {
   const randomizeRooms = async () => {
     try {
       setLoading(true);
-      await fetch("http://localhost:5000/api/bookings/randomize", {
-        method: "POST",
-      });
+      await fetch(`${API_BASE_URL}/api/bookings/randomize`, { method: "POST" });
       await fetchRooms();
     } catch (err) {
       console.error("Randomization failed:", err);
@@ -85,13 +84,12 @@ const HomePage = () => {
       setLoading(false);
     }
   };
-  
 
   // Reset Rooms
   const resetRooms = async () => {
     try {
       setLoading(true);
-      await fetch("http://localhost:5000/api/bookings/reset", { method: "POST" });
+      await fetch(`${API_BASE_URL}/api/bookings/reset`, { method: "POST" });
       setBookedRooms([]);
       setTravelTime(null);
       setShowNotification(false);
@@ -108,7 +106,7 @@ const HomePage = () => {
     if (bookedRooms.length === 0) return {};
 
     return bookedRooms.reduce((acc, room) => {
-      const floor = Math.floor(room / 100) || 0; // Prevent NaN
+      const floor = Math.floor(room / 100) || 0;
       acc[floor] = (acc[floor] || 0) + 1;
       return acc;
     }, {});
@@ -119,27 +117,39 @@ const HomePage = () => {
   return (
     <div className="container">
       <Header />
-
       <main className="content">
         <div className="booking-section">
-          <BookingControls bookRooms={bookRooms} resetRooms={resetRooms} randomizeRooms={randomizeRooms}/>
+          <BookingControls
+            bookRooms={bookRooms}
+            resetRooms={resetRooms}
+            randomizeRooms={randomizeRooms}
+          />
         </div>
-
-        {/* Notification Popup */}
         {showNotification && bookedRooms.length > 0 && (
           <div className="notification">
-            <button className="close-btn" onClick={() => setShowNotification(false)}>✖</button>
+            <button
+              className="close-btn"
+              onClick={() => setShowNotification(false)}
+            >
+              ✖
+            </button>
             <h3>Booking Summary</h3>
-            <p><strong>Total Rooms Booked:</strong> {bookedRooms.length}</p>
+            <p>
+              <strong>Total Rooms Booked:</strong> {bookedRooms.length}
+            </p>
             {Object.entries(floorStats).map(([floor, count]) => (
-              <p key={floor}><strong>Floor {floor}:</strong> {count} rooms booked</p>
+              <p key={floor}>
+                <strong>Floor {floor}:</strong> {count} rooms booked
+              </p>
             ))}
             {travelTime !== null && (
-              <p><strong>Distance between first and last booked rooms:</strong> {travelTime} units</p>
+              <p>
+                <strong>Distance between first and last booked rooms:</strong>{" "}
+                {travelTime} units
+              </p>
             )}
           </div>
         )}
-
         <div className="room-container">
           <div className="stairs-lift">
             <span>Stairs / Lift</span>
@@ -149,7 +159,6 @@ const HomePage = () => {
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   );
