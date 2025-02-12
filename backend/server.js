@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 
 const corsOptions = {
-  origin: "https://manish-assessment-submission-frontend-9qqfdw9k9.vercel.app",
+  origin: "https://manish-assessment-submission-frontend.vercel.app/",
   methods: "GET,POST,PUT,DELETE",
   allowedHeaders: "Content-Type,Authorization"
 };
