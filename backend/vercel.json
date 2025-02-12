@@ -8,8 +8,12 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "server.js"
+      "src": "/api/(.*)",
+      "dest": "/server.js",
+      "headers": {
+        "cache-control": "s-maxage=1, stale-while-revalidate",
+        "access-control-allow-origin": "*"
+      }
     }
   ]
 }
