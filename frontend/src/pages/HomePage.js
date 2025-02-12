@@ -13,7 +13,7 @@ const HomePage = () => {
   const [showNotification, setShowNotification] = useState(false);
 
   // Use environment variable for backend URL
-  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || "https://manish-assessment-submission-pm092e3q5-pkmanish2611s-projects.vercel.app";
 
   // Fetch Rooms
   const fetchRooms = async () => {

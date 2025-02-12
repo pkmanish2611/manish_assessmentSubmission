@@ -4,8 +4,15 @@ const bookingRoutes = require('./routes/bookingRoutes');
 
 const app = express();
 
-app.use(cors());
 app.use(express.json());
+
+const corsOptions = {
+  origin: "https://manish-assessment-submission-frontend-9qqfdw9k9.vercel.app",
+  methods: "GET,POST,PUT,DELETE",
+  allowedHeaders: "Content-Type,Authorization"
+};
+
+app.use(cors(corsOptions));
 
 app.use('/api/bookings', bookingRoutes);
 
